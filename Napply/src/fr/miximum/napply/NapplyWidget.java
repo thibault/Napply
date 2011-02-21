@@ -38,11 +38,11 @@ public class NapplyWidget extends AppWidgetProvider {
 
             // Get the layout for the App Widget and attach an on-click listener to the button
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.napply_widget_layout);
+            views.setTextViewText(R.id.nap_time, "00");
+            views.setTextViewText(R.id.nap_end, "zZz");
 
             // Tell the AppWidgetManager to perform an update on the current App Widget
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
     }
-
-
 }

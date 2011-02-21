@@ -20,25 +20,26 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/napply_widget"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/widget_bg">
+    android:layout_width="78dp"
+    android:layout_height="78dp"
+    android:background="@drawable/widget_bg"
+    style="@style/Widget">
     
-        <TextView
-            android:id="@+id/nap_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:singleLine="true"
-            android:ellipsize="none" />
+    <TextView
+        android:id="@+id/nap_time"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:gravity="center_horizontal"
+        style="@style/Widget.NapTime"/>
 
-        <TextView
-            android:id="@+id/nap_end"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:gravity="center_vertical"
-            android:paddingLeft="4dip"
-            android:includeFontPadding="false"
-            android:singleLine="true"
-            android:ellipsize="none" />
+
+    <TextView
+        android:id="@+id/nap_end"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="7dp"
+        android:gravity="center_horizontal"
+        style="@style/Widget.EndTime"/>
 </RelativeLayout>

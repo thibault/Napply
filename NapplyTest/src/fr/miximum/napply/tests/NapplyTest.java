@@ -1,4 +1,6 @@
-package fr.miximum.napply;
+package fr.miximum.napply.tests;
+
+import fr.miximum.napply.Napply;
 
 import android.test.ActivityInstrumentationTestCase2;
 

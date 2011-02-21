@@ -1,0 +1,9 @@
+local.properties
+*class
+*dex
+*apk
+bin
+gen
+R.java
+.classpath
+.project

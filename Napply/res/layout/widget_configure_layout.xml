@@ -37,7 +37,7 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
         android:orientation="horizontal"
         android:layout_gravity="center" >
 
-        <NumberPicker
+        <fr.miximum.picker.NumberPicker
             android:id="@+id/nap_hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -50,7 +50,7 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
             android:textSize="50dp"
             android:layout_gravity="center_vertical"/>
 
-        <NumberPicker
+        <fr.miximum.picker.NumberPicker
             android:id="@+id/nap_minute"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

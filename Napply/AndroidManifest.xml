@@ -25,14 +25,15 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
     <application android:label="@string/app_name" android:icon="@drawable/icon">
 
         <!-- Napply widget -->
-	    <receiver android:name="NapplyWidget" >
-		    <intent-filter>
-		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-		    </intent-filter>
-		    <meta-data android:name="android.appwidget.provider"
-		               android:resource="@xml/napply_widget_meta" />
-	   </receiver>
-       <activity android:name="WidgetConfigure">
+        <receiver android:name="NapplyWidget" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                       android:resource="@xml/napply_widget_meta" />
+       </receiver>
+       <activity android:name="WidgetConfigure"
+            android:theme="@android:style/Theme.Dialog">
            <intent-filter>
                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
            </intent-filter>

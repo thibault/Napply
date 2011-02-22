@@ -22,5 +22,6 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
     android:minWidth="72dp"
     android:minHeight="72dp"
     android:updatePeriodMillis="86400000"
+    android:configure="fr.miximum.napply.WidgetConfigure"
     android:initialLayout="@layout/napply_widget_layout" >
 </appwidget-provider>

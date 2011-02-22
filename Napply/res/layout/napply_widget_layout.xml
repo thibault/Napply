@@ -24,7 +24,7 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
     android:layout_height="78dp"
     android:background="@drawable/widget_bg"
     style="@style/Widget">
-    
+
     <TextView
         android:id="@+id/nap_time"
         android:layout_width="fill_parent"

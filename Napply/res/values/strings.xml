@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Napply</string>
+    <string name="create_widget">Create widget</string>
+    <string name="cancel">Cancel</string>
+    <string name="configure_intro">Select the nap duration for this widget:</string>
 </resources>

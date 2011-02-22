@@ -20,6 +20,8 @@
 package fr.miximum.napply;
 
 import android.app.Activity;
+import android.appwidget.AppWidgetManager;
+import android.content.Intent;
 import android.os.Bundle;
 
 public class WidgetConfigure extends Activity {
@@ -28,9 +30,19 @@ public class WidgetConfigure extends Activity {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        // Set the result to CANCELED.  This will cause the widget host to cancel
+        setContentView(R.layout.widget_configure_layout);
+
+        // Set the result to CANCELED. This will cause the widget host to cancel
         // out of the widget placement if they press the back button.
-        //setResult(RESULT_CANCELED);
-        finish();
+        /*setResult(RESULT_CANCELED);
+
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            int mAppWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+        }*/
+
+        //finish();
     }
 }

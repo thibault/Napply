@@ -5,7 +5,6 @@ import fr.miximum.napply.WidgetConfigure;
 import fr.miximum.picker.NumberPicker;
 
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
 
 public class WidgetConfigureTest extends ActivityInstrumentationTestCase2<WidgetConfigure> {
 

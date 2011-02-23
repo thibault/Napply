@@ -22,11 +22,16 @@ package fr.miximum.napply;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 public class NapplyWidget extends AppWidgetProvider {
-    
+
+    private static final String PREFS_NAME = "fr.miximum.napply";
+
+    private static final String PREF_DURATION_PREFIX = "nap_duration_";
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         final int N = appWidgetIds.length;
@@ -35,14 +40,45 @@ public class NapplyWidget extends AppWidgetProvider {
         // Perform this loop procedure for each App Widget that belongs to this provider
         for (int i=0; i<N; i++) {
             int appWidgetId = appWidgetIds[i];
-
-            // Get the layout for the App Widget and attach an on-click listener to the button
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.napply_widget_layout);
-            views.setTextViewText(R.id.nap_time, "00");
-            views.setTextViewText(R.id.nap_end, "zZz");
-
-            // Tell the AppWidgetManager to perform an update on the current App Widget
-            appWidgetManager.updateAppWidget(appWidgetId, views);
+            updateAppWidget(context, appWidgetManager, appWidgetId);
         }
+    }
+
+    /**
+     * Save the configured nap duration in shared preferences
+     * @param appWidgetId The widget id
+     * @param napDuration The duration in minutes
+     */
+    static void setNapDuration(Context context, int appWidgetId, int napDuration) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
+        prefs.putInt(PREF_DURATION_PREFIX + appWidgetId, napDuration);
+        prefs.commit();
+    }
+
+    /**
+     * get the saved nap duration from shared preferences
+     * @param appWidgetId The widget id
+     * @return The nap duration for the given appWidget id
+     */
+    static int getNapDuration(Context context, int appWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        int duration = prefs.getInt(PREF_DURATION_PREFIX + appWidgetId, 0);
+
+        return duration;
+    }
+
+    /**
+     * Update the widget
+     * @param context
+     * @param appWidgetManager
+     * @param appWidgetId
+     */
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.napply_widget_layout);
+        int napDuration = getNapDuration(context, appWidgetId);
+
+        views.setTextViewText(R.id.nap_time, "" + napDuration);
+        views.setTextViewText(R.id.nap_end, context.getString(R.string.default_widget_label));
+        appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 }

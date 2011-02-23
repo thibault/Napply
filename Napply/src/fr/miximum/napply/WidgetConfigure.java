@@ -23,8 +23,10 @@ import fr.miximum.picker.NumberPicker;
 
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 public class WidgetConfigure extends Activity {
 
@@ -35,6 +37,9 @@ public class WidgetConfigure extends Activity {
 
     /** The default number of minutes for the nap duration */
     private static final int DEFAULT_NAP_MINUTES = 25;
+
+    private NumberPicker mHourPicker;
+    private NumberPicker mMinutePicker;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -59,13 +64,60 @@ public class WidgetConfigure extends Activity {
             finish();
         }
 
-        // Configure picker widget
-        fr.miximum.picker.NumberPicker hourPicker = (NumberPicker) findViewById(R.id.nap_hour);
-        hourPicker.setRange(0, 23);
-        hourPicker.setCurrent(DEFAULT_NAP_HOURS);
+        configurePickers();
+        findViewById(R.id.create_widget).setOnClickListener(mOnCreateClickListener);
+        findViewById(R.id.cancel_widget).setOnClickListener(mOnCancelClickListener);
+    }
 
-        NumberPicker minutePicker = (NumberPicker) findViewById(R.id.nap_minute);
-        minutePicker.setRange(0, 59);
-        minutePicker.setCurrent(DEFAULT_NAP_MINUTES);
+    /**
+     * Click listener to handle create button click
+     */
+    View.OnClickListener mOnCreateClickListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            final Context context = WidgetConfigure.this;
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+
+            // Update widget view
+            int napDuration = getNapDuration();
+            NapplyWidget.setNapDuration(context, mAppWidgetId, napDuration);
+            NapplyWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
+
+            // Make sure we pass back the original appWidgetId
+            Intent resultValue = new Intent();
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+            setResult(RESULT_OK, resultValue);
+            finish();
+        }
+    };
+
+    /**
+     * Click listener to handle cancel button click
+     */
+    View.OnClickListener mOnCancelClickListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            finish();
+        }
+    };
+
+    /**
+     * Configure nap duration pickers with correct ranges and default values
+     */
+    private void configurePickers() {
+        mHourPicker = (NumberPicker) findViewById(R.id.nap_hour);
+        mHourPicker.setRange(0, 23);
+        mHourPicker.setCurrent(DEFAULT_NAP_HOURS);
+
+        mMinutePicker = (NumberPicker) findViewById(R.id.nap_minute);
+        mMinutePicker.setRange(0, 59);
+        mMinutePicker.setCurrent(DEFAULT_NAP_MINUTES);
+    }
+
+    /**
+     * Computes the total nap duration
+     * @return the nap duration, in minutes
+     */
+    public int getNapDuration()
+    {
+        return mHourPicker.getCurrent() * 60 + mMinutePicker.getCurrent();
     }
 }

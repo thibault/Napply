@@ -26,6 +26,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 public class WidgetConfigure extends Activity {
@@ -61,6 +62,7 @@ public class WidgetConfigure extends Activity {
 
         // If they gave us an intent without the widget id, just bail.
         if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            Log.e(Napply.TAG, "Configure: no appwidget id provided");
             finish();
         }
 

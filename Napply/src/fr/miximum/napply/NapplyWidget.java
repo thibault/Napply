@@ -19,12 +19,22 @@
 
 package fr.miximum.napply;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
+import android.os.Bundle;
+import android.os.SystemClock;
 import android.widget.RemoteViews;
+import android.widget.Toast;
+
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class NapplyWidget extends AppWidgetProvider {
 
@@ -32,16 +42,74 @@ public class NapplyWidget extends AppWidgetProvider {
 
     private static final String PREF_DURATION_PREFIX = "nap_duration_";
 
+    private static final String ACTION_START_ALARM = "fr.miximum.napply.START_ALARM";
+    private static final String ACTION_RING_ALARM = "fr.miximum.napply.RING_ALARM";
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         final int N = appWidgetIds.length;
 
-        Log.e(Napply.TAG, "In widget:onUpdate");
         // Perform this loop procedure for each App Widget that belongs to this provider
         for (int i=0; i<N; i++) {
             int appWidgetId = appWidgetIds[i];
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        // Get appWidget id
+        int widgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            widgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+        }
+
+        // Only if we have a valid appWidgetId
+        if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            if (ACTION_START_ALARM.equals(intent.getAction())) {
+                int duration = startAlarm(context, widgetId);
+                showNewNapToast(context, duration);
+            }
+        }
+    }
+
+    /**
+     * Start the alarm for the given widget
+     * @param context
+     * @param appWidgetId
+     * @return the delay before alarm rings
+     */
+    private int startAlarm(Context context, int appWidgetId) {
+        int napDuration = 60 * 1000 * getNapDuration(context, appWidgetId);
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(context, NapplyWidget.class);
+        intent.setAction(ACTION_RING_ALARM);
+        PendingIntent pi = PendingIntent.getBroadcast(context, appWidgetId, intent, 0);
+
+        am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + napDuration, pi);
+
+        return napDuration;
+    }
+
+    /**
+     * Display notification message when alarm started
+     * @param context
+     * @param napDuration duration in milliseconds
+     */
+    private void showNewNapToast(Context context, int napDuration) {
+        Calendar c = new GregorianCalendar();
+        c.setTime(new Date());
+        c.add(Calendar.MILLISECOND, napDuration);
+
+        CharSequence message = context.getString(R.string.toast_alarm_started,
+                DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime()));
+
+        int duration = Toast.LENGTH_LONG;
+        Toast toast = Toast.makeText(context, message, duration);
+        toast.show();
     }
 
     /**
@@ -76,6 +144,12 @@ public class NapplyWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.napply_widget_layout);
         int napDuration = getNapDuration(context, appWidgetId);
+
+        Intent intent = new Intent(context, NapplyWidget.class);
+        intent.setAction(ACTION_START_ALARM);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.napply_widget, pendingIntent);
 
         views.setTextViewText(R.id.nap_time, "" + napDuration);
         views.setTextViewText(R.id.nap_end, context.getString(R.string.default_widget_label));

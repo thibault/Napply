@@ -72,7 +72,7 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
             android:text="@string/create_widget" />
 
         <Button
-            android:id="@+id/install_widget"
+            android:id="@+id/cancel_widget"
             android:layout_height="wrap_content"
             android:layout_width="120sp"
             android:layout_weight="1"

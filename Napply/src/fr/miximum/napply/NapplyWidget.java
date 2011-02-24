@@ -68,6 +68,8 @@ public class NapplyWidget extends AppWidgetProvider {
             if (Napply.ACTION_START_ALARM.equals(intent.getAction())) {
                 int duration = startAlarm(context, widgetId);
                 showNewNapToast(context, duration);
+
+                updateAppWidget(context, AppWidgetManager.getInstance(context), widgetId, formatAlarmTime(duration));
             }
         }
     }
@@ -98,16 +100,23 @@ public class NapplyWidget extends AppWidgetProvider {
      * @param napDuration duration in milliseconds
      */
     private void showNewNapToast(Context context, int napDuration) {
-        Calendar c = new GregorianCalendar();
-        c.setTime(new Date());
-        c.add(Calendar.MILLISECOND, napDuration);
 
-        CharSequence message = context.getString(R.string.toast_alarm_started,
-                DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime()));
-
+        CharSequence message = context.getString(R.string.toast_alarm_started, formatAlarmTime(napDuration));
         int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, message, duration);
         toast.show();
+    }
+
+    /**
+     * Get the string of the alarm ring time
+     * @param napDuration
+     * @return
+     */
+    private String formatAlarmTime(int napDuration) {
+        Calendar c = new GregorianCalendar();
+        c.setTime(new Date());
+        c.add(Calendar.MILLISECOND, napDuration);
+        return DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime());
     }
 
     /**
@@ -139,9 +148,12 @@ public class NapplyWidget extends AppWidgetProvider {
      * @param appWidgetManager
      * @param appWidgetId
      */
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.napply_widget_layout);
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, String napLabel) {
+
         int napDuration = getNapDuration(context, appWidgetId);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.napply_widget_layout);
+        views.setTextViewText(R.id.nap_time, "" + napDuration);
+        views.setTextViewText(R.id.nap_end, napLabel);
 
         Intent intent = new Intent(context, NapplyWidget.class);
         intent.setAction(Napply.ACTION_START_ALARM);
@@ -149,8 +161,17 @@ public class NapplyWidget extends AppWidgetProvider {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.napply_widget, pendingIntent);
 
-        views.setTextViewText(R.id.nap_time, "" + napDuration);
-        views.setTextViewText(R.id.nap_end, context.getString(R.string.default_widget_label));
         appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
+
+    /**
+     * Update the widget. Use the default nap label
+     * @param context
+     * @param appWidgetManager
+     * @param appWidgetId
+     */
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+        String napLabel = context.getString(R.string.default_widget_label);
+        updateAppWidget(context, appWidgetManager, appWidgetId, napLabel);
     }
 }

@@ -82,7 +82,7 @@ public class NapplyWidget extends AppWidgetProvider {
         int napDuration = 60 * 1000 * getNapDuration(context, appWidgetId);
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        Intent intent = new Intent(context, NapplyAlarm.class);
+        Intent intent = new Intent(context, AlarmCancelDialog.class);
         intent.setAction(Napply.ACTION_RING_ALARM);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         PendingIntent pi = PendingIntent.getService(context, appWidgetId, intent, 0);

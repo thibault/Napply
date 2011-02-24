@@ -24,6 +24,7 @@ public class AlarmCancelDialog extends Activity {
     /** Handler to unlock the screen */
     private KeyguardLock mKeyguardLock = null;
 
+    /** Handler to turn the screen on and bright */
     private PowerManager.WakeLock mWakeLock = null;
 
     @Override
@@ -38,26 +39,26 @@ public class AlarmCancelDialog extends Activity {
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, Napply.TAG);
 
-        // Show the dialog
+        ringAlarm(getApplicationContext());
         showDialog(DIALOG_ID);
     }
 
     @Override
     public void onResume() {
-        super.onResume();
-
         // Disable the lock and turn the screen on
         mWakeLock.acquire();
         mKeyguardLock.disableKeyguard();
+
+        super.onResume();
     }
 
     @Override
     public void onPause() {
-        super.onPause();
-
         // Reenable screen lock, and release the power lock
         mKeyguardLock.reenableKeyguard();
         mWakeLock.release();
+
+        super.onPause();
     }
 
     /**
@@ -73,13 +74,13 @@ public class AlarmCancelDialog extends Activity {
                         .setCancelable(false)
                         .setPositiveButton(context.getString(R.string.snooze), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                snoozeAlarm();
+                                snoozeAlarm(getApplicationContext());
                                 finish();
                             }
                         })
                         .setNegativeButton(context.getString(R.string.dismiss), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                dismissAlarm();
+                                dismissAlarm(getApplicationContext());
                                 finish();
                             }
                         });
@@ -93,17 +94,25 @@ public class AlarmCancelDialog extends Activity {
         return dialog;
     }
 
-    private void snoozeAlarm() {
+    /**
+     * Ask the service to ring the alarm
+     */
+    private void ringAlarm(Context context) {
+        Intent ring = new Intent(context, NapplyAlarm.class);
+        ring.setAction(Napply.ACTION_RING_ALARM);
+        startService(ring);
+    }
+
+    private void snoozeAlarm(Context context) {
 
     }
 
     /**
      * Send a dismiss alarm intent to the alarm service
      */
-    private void dismissAlarm() {
-        Context context = getApplicationContext();
-        Intent intent = new Intent(context, NapplyAlarm.class);
-        intent.setAction(Napply.ACTION_CANCEL_ALARM);
-        startService(intent);
+    private void dismissAlarm(Context context) {
+        Intent dismiss = new Intent(context, NapplyAlarm.class);
+        dismiss.setAction(Napply.ACTION_CANCEL_ALARM);
+        startService(dismiss);
     }
 }

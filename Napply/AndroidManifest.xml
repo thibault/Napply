@@ -53,9 +53,16 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
 			</intent-filter>
 		</activity>
 		<service android:name="NapplyAlarm">
-			<action android:name="fr.miximum.napply.RING_ALARM" />
-			<action android:name="fr.miximum.napply.CANCEL_ALARM" />
+		    <intent-filter>
+			    <action android:name="fr.miximum.napply.RING_ALARM" />
+			    <action android:name="fr.miximum.napply.CANCEL_ALARM" />
+			</intent-filter>
 		</service>
-	<activity android:name="AlarmCancelDialog"></activity>
-</application>
+		<activity android:name="AlarmCancelDialog">
+		     <intent-filter>
+	             <action android:name="fr.miximum.napply.RING_ALARM" />
+	             <action android:name="fr.miximum.napply.CANCEL_ALARM" />
+	         </intent-filter>
+		</activity>
+    </application>
 </manifest>

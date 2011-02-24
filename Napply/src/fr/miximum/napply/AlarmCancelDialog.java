@@ -6,9 +6,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.PowerManager;
 
@@ -27,9 +29,25 @@ public class AlarmCancelDialog extends Activity {
     /** Handler to turn the screen on and bright */
     private PowerManager.WakeLock mWakeLock = null;
 
+    /**
+     * If the alarm stops itself, it should be able to tell us to finish
+     */
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Napply.ACTION_DESTROY_DIALOG.equals(intent.getAction())) {
+                finish();
+            }
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Register terminate message receiver
+        IntentFilter filter = new IntentFilter(Napply.ACTION_DESTROY_DIALOG);
+        registerReceiver(mReceiver, filter);
 
         // Handler to the lock object
         KeyguardManager km = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);

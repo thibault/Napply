@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.os.Vibrator;
@@ -27,22 +28,47 @@ public class NapplyAlarm extends Service {
      */
     private static final int AUTO_KILL_TIMEOUT = 60 * 1000;
 
+    private static final String AUTOKILL_EXTRA = "autokill";
+
     private MediaPlayer mMediaPlayer = null;
     private Vibrator mVibrator = null;
+    private boolean isAlarmRunning = false;
 
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         if (Napply.ACTION_RING_ALARM.equals(intent.getAction())) {
+            isAlarmRunning = true;
             setupAutokillAlarm();
             ring();
         }
-        else if (Napply.ACTION_CANCEL_ALARM.equals(intent.getAction()))
+        else if (Napply.ACTION_CANCEL_ALARM.equals(intent.getAction()) && isAlarmRunning)
         {
-            cancelAutokillAlarm();
+            isAlarmRunning = false;
             stop();
+
+            // Was the alarm terminated by the autokill feature?
+            Bundle extras = intent.getExtras();
+            boolean isAutokill = extras != null && extras.getBoolean(AUTOKILL_EXTRA, false);
+            if (isAutokill) {
+                // If autokill, we need to destroy the dialog alert
+                destroyDialog();
+            }
+            else {
+                // Else, cancel the alarm
+                cancelAutokillAlarm();
+            }
+            stopSelf();
         }
 
-        return START_NOT_STICKY;
+        return START_STICKY;
+    }
+
+    /**
+     * Terminate the dialog activity
+     */
+    private void destroyDialog() {
+        Intent intent = new Intent(Napply.ACTION_DESTROY_DIALOG);
+        sendBroadcast(intent);
     }
 
     /**
@@ -77,17 +103,27 @@ public class NapplyAlarm extends Service {
      * We setup a timer to prevent the alarm to run for hours
      */
     private void setupAutokillAlarm() {
-        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(this, NapplyAlarm.class);
         intent.setAction(Napply.ACTION_CANCEL_ALARM);
+        intent.putExtra(AUTOKILL_EXTRA, true);
         PendingIntent pi = PendingIntent.getService(this, 0, intent, 0);
 
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + AUTO_KILL_TIMEOUT, pi);
     }
 
+    /**
+     * Cancel the upcoming autokill alarm
+     */
     private void cancelAutokillAlarm() {
+        Intent intent = new Intent(this, NapplyAlarm.class);
+        intent.setAction(Napply.ACTION_CANCEL_ALARM);
+        intent.putExtra(AUTOKILL_EXTRA, true);
+        PendingIntent pi = PendingIntent.getService(this, 0, intent, 0);
 
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        am.cancel(pi);
     }
 
     @Override

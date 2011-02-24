@@ -17,7 +17,7 @@ import android.util.Log;
 
 import java.io.IOException;
 
-public class NapplyAlarm extends Service {
+public class AlarmService extends Service {
 
     /** Pattern for the alarm vibration */
     private static final long[] sVibratePattern = new long[] { 500, 500 };
@@ -104,7 +104,7 @@ public class NapplyAlarm extends Service {
      */
     private void setupAutokillAlarm() {
 
-        Intent intent = new Intent(this, NapplyAlarm.class);
+        Intent intent = new Intent(this, AlarmService.class);
         intent.setAction(Napply.ACTION_CANCEL_ALARM);
         intent.putExtra(AUTOKILL_EXTRA, true);
         PendingIntent pi = PendingIntent.getService(this, 0, intent, 0);
@@ -117,7 +117,7 @@ public class NapplyAlarm extends Service {
      * Cancel the upcoming autokill alarm
      */
     private void cancelAutokillAlarm() {
-        Intent intent = new Intent(this, NapplyAlarm.class);
+        Intent intent = new Intent(this, AlarmService.class);
         intent.setAction(Napply.ACTION_CANCEL_ALARM);
         intent.putExtra(AUTOKILL_EXTRA, true);
         PendingIntent pi = PendingIntent.getService(this, 0, intent, 0);

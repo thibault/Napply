@@ -116,7 +116,7 @@ public class AlarmCancelDialog extends Activity {
      * Ask the service to ring the alarm
      */
     private void ringAlarm(Context context) {
-        Intent ring = new Intent(context, NapplyAlarm.class);
+        Intent ring = new Intent(context, AlarmService.class);
         ring.setAction(Napply.ACTION_RING_ALARM);
         startService(ring);
     }
@@ -129,7 +129,7 @@ public class AlarmCancelDialog extends Activity {
      * Send a dismiss alarm intent to the alarm service
      */
     private void dismissAlarm(Context context) {
-        Intent dismiss = new Intent(context, NapplyAlarm.class);
+        Intent dismiss = new Intent(context, AlarmService.class);
         dismiss.setAction(Napply.ACTION_CANCEL_ALARM);
         startService(dismiss);
     }

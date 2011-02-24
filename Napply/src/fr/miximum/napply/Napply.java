@@ -7,6 +7,12 @@ public class Napply extends Activity
 {
     public static final String TAG = "Napply";
 
+    public static final String ACTION_START_ALARM = "fr.miximum.napply.START_ALARM";
+
+    public static final String ACTION_RING_ALARM = "fr.miximum.napply.RING_ALARM";
+
+    public static final String ACTION_CANCEL_ALARM = "fr.miximum.napply.CANCEL_ALARM";
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)

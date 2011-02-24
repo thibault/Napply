@@ -19,32 +19,43 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="fr.miximum.napply"
-      android:versionCode="1"
-      android:versionName="1.0">
-    <application android:label="@string/app_name" android:icon="@drawable/icon">
+	package="fr.miximum.napply" android:versionCode="1"
+	android:versionName="1.0">
 
-        <!-- Napply widget -->
-        <receiver android:name="NapplyWidget" >
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="fr.miximum.napply.START_ALARM" />
-                <action android:name="fr.miximum.napply.RING_ALARM" />
-            </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
-                       android:resource="@xml/napply_widget_meta" />
-       </receiver>
+	<uses-permission android:name="android.permission.VIBRATE" />
+	<uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-       <!--  Configure activity -->
-       <activity android:name="WidgetConfigure"
-            android:theme="@android:style/Theme.Dialog">
-           <intent-filter>
-               <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-           </intent-filter>
-       </activity>
+	<application android:label="@string/app_name" android:icon="@drawable/icon">
 
-        <activity android:name="Napply"
-                  android:label="@string/app_name">
-        </activity>
-    </application>
+		<!-- Napply widget -->
+		<receiver android:name="NapplyWidget">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+				<action android:name="fr.miximum.napply.START_ALARM" />
+			</intent-filter>
+			<meta-data android:name="android.appwidget.provider"
+				android:resource="@xml/napply_widget_meta" />
+		</receiver>
+
+		<!-- Configure activity -->
+		<activity android:name="WidgetConfigure" android:theme="@android:style/Theme.Dialog">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name="Napply" android:label="@string/app_name">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		<service android:name="NapplyAlarm">
+			<action android:name="fr.miximum.napply.RING_ALARM" />
+			<action android:name="fr.miximum.napply.CANCEL_ALARM" />
+		</service>
+	<activity android:name="AlarmCancelDialog"></activity>
+</application>
 </manifest>

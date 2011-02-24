@@ -42,9 +42,6 @@ public class NapplyWidget extends AppWidgetProvider {
 
     private static final String PREF_DURATION_PREFIX = "nap_duration_";
 
-    private static final String ACTION_START_ALARM = "fr.miximum.napply.START_ALARM";
-    private static final String ACTION_RING_ALARM = "fr.miximum.napply.RING_ALARM";
-
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         final int N = appWidgetIds.length;
@@ -68,7 +65,7 @@ public class NapplyWidget extends AppWidgetProvider {
 
         // Only if we have a valid appWidgetId
         if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-            if (ACTION_START_ALARM.equals(intent.getAction())) {
+            if (Napply.ACTION_START_ALARM.equals(intent.getAction())) {
                 int duration = startAlarm(context, widgetId);
                 showNewNapToast(context, duration);
             }
@@ -85,9 +82,10 @@ public class NapplyWidget extends AppWidgetProvider {
         int napDuration = 60 * 1000 * getNapDuration(context, appWidgetId);
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        Intent intent = new Intent(context, NapplyWidget.class);
-        intent.setAction(ACTION_RING_ALARM);
-        PendingIntent pi = PendingIntent.getBroadcast(context, appWidgetId, intent, 0);
+        Intent intent = new Intent(context, NapplyAlarm.class);
+        intent.setAction(Napply.ACTION_RING_ALARM);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        PendingIntent pi = PendingIntent.getService(context, appWidgetId, intent, 0);
 
         am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + napDuration, pi);
 
@@ -146,7 +144,7 @@ public class NapplyWidget extends AppWidgetProvider {
         int napDuration = getNapDuration(context, appWidgetId);
 
         Intent intent = new Intent(context, NapplyWidget.class);
-        intent.setAction(ACTION_START_ALARM);
+        intent.setAction(Napply.ACTION_START_ALARM);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.napply_widget, pendingIntent);

@@ -30,6 +30,11 @@ public class AlarmService extends Service {
 
     private static final String AUTOKILL_EXTRA = "autokill";
 
+    /**
+     * Delay to wait for the snooze feature
+     */
+    private static final int SNOOZE_DELAY = 7 * 60 * 1000;
+
     private MediaPlayer mMediaPlayer = null;
     private Vibrator mVibrator = null;
     private boolean isAlarmRunning = false;
@@ -37,13 +42,11 @@ public class AlarmService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         if (Napply.ACTION_RING_ALARM.equals(intent.getAction())) {
-            isAlarmRunning = true;
             setupAutokillAlarm();
             ring();
         }
         else if (Napply.ACTION_CANCEL_ALARM.equals(intent.getAction()) && isAlarmRunning)
         {
-            isAlarmRunning = false;
             stop();
 
             // Was the alarm terminated by the autokill feature?
@@ -58,6 +61,12 @@ public class AlarmService extends Service {
                 cancelAutokillAlarm();
             }
             stopSelf();
+        }
+        else if (Napply.ACTION_SNOOZE_ALARM.equals(intent.getAction()) && isAlarmRunning)
+        {
+            stop();
+            cancelAutokillAlarm();
+            scheduleSnooze();
         }
 
         return START_STICKY;
@@ -75,6 +84,7 @@ public class AlarmService extends Service {
      * Play alarm sound and vibrate handset
      */
     private void ring() {
+        isAlarmRunning = true;
         mVibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
         mVibrator.vibrate(sVibratePattern, 0);
 
@@ -95,8 +105,22 @@ public class AlarmService extends Service {
      * Stop the alarm
      */
     private void stop() {
+        isAlarmRunning = false;
         mVibrator.cancel();
         mMediaPlayer.stop();
+    }
+
+    /**
+     * Schedule to relaunch alarm in a few minutes
+     */
+    private void scheduleSnooze() {
+
+        Intent intent = new Intent(this, AlarmCancelDialog.class);
+        intent.setAction(Napply.ACTION_RING_ALARM);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
+
+        AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + SNOOZE_DELAY, pi);
     }
 
     /**

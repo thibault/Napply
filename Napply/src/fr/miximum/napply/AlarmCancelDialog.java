@@ -121,8 +121,13 @@ public class AlarmCancelDialog extends Activity {
         startService(ring);
     }
 
+    /**
+     * Ask the service to snooze the alarm
+     */
     private void snoozeAlarm(Context context) {
-
+        Intent snooze = new Intent(context, AlarmService.class);
+        snooze.setAction(Napply.ACTION_SNOOZE_ALARM);
+        startService(snooze);
     }
 
     /**

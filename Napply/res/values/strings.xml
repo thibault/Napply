@@ -6,6 +6,7 @@
     <string name="configure_intro">Select the nap duration for this widget:</string>
     <string name="default_widget_label">zZz</string>
     <string name="toast_alarm_started">Alarm will ring at <xliff:g id="duration">%1$s</xliff:g>. Have a good rest.</string>
+    <string name="toast_alarm_canceled">Alarm was canceled</string>
     <string name="wake_up">Time to wake up!</string>
     <string name="snooze">Just a few more minutes</string>
     <string name="dismiss">Ok, I\'ll wake up. I need some coffee</string>

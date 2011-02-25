@@ -42,6 +42,8 @@ public class NapplyWidget extends AppWidgetProvider {
 
     private static final String PREF_DURATION_PREFIX = "nap_duration_";
 
+    private static final String PREF_IS_RUNNING_PREFIX = "is_nap_running_";
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         final int N = appWidgetIds.length;
@@ -49,7 +51,7 @@ public class NapplyWidget extends AppWidgetProvider {
         // Perform this loop procedure for each App Widget that belongs to this provider
         for (int i=0; i<N; i++) {
             int appWidgetId = appWidgetIds[i];
-            updateAppWidget(context, appWidgetManager, appWidgetId);
+            updateAppWidget(context, appWidgetManager, appWidgetId, Napply.ACTION_START_ALARM);
         }
     }
 
@@ -65,11 +67,20 @@ public class NapplyWidget extends AppWidgetProvider {
 
         // Only if we have a valid appWidgetId
         if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+
             if (Napply.ACTION_START_ALARM.equals(intent.getAction())) {
                 int duration = startAlarm(context, widgetId);
                 showNewNapToast(context, duration);
+                setAlarmRunning(context, true, widgetId);
 
                 updateAppWidget(context, AppWidgetManager.getInstance(context), widgetId, formatAlarmTime(duration));
+            }
+            else if (Napply.ACTION_CANCEL_ALARM.equals(intent.getAction())) {
+                stopAlarm(context, widgetId);
+                showCanceledToast(context);
+                setAlarmRunning(context, false, widgetId);
+
+                updateAppWidget(context, AppWidgetManager.getInstance(context), widgetId);
             }
         }
     }
@@ -86,12 +97,31 @@ public class NapplyWidget extends AppWidgetProvider {
         Intent intent = new Intent(context, AlarmCancelDialog.class);
         intent.setAction(Napply.ACTION_RING_ALARM);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        PendingIntent pi = PendingIntent.getActivity(context, appWidgetId, intent, 0);
+        PendingIntent pi = PendingIntent.getActivity(context, appWidgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        am.cancel(pi);
         am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + napDuration, pi);
 
         return napDuration;
+    }
+
+    /**
+     * Stop the alarm for given widget
+     * @param context
+     * @param appWidgetId
+     */
+    private void stopAlarm(Context context, int appWidgetId) {
+
+        // Prepare the same intant as for launching alarm
+        Intent intent = new Intent(context, AlarmCancelDialog.class);
+        intent.setAction(Napply.ACTION_RING_ALARM);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        PendingIntent pi = PendingIntent.getActivity(context, appWidgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        // Cancel the alarm
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        am.cancel(pi);
     }
 
     /**
@@ -103,6 +133,17 @@ public class NapplyWidget extends AppWidgetProvider {
 
         CharSequence message = context.getString(R.string.toast_alarm_started, formatAlarmTime(napDuration));
         int duration = Toast.LENGTH_LONG;
+        Toast toast = Toast.makeText(context, message, duration);
+        toast.show();
+    }
+
+    /**
+     * Display notification message when an alarm is canceled
+     * @param context
+     */
+    private void showCanceledToast(Context context) {
+        int duration = Toast.LENGTH_LONG;
+        CharSequence message = context.getString(R.string.toast_alarm_canceled);
         Toast toast = Toast.makeText(context, message, duration);
         toast.show();
     }
@@ -143,6 +184,25 @@ public class NapplyWidget extends AppWidgetProvider {
     }
 
     /**
+     * Save a preference to remember if a widget has currently a running alarm
+     * @param context
+     * @param isRunning Is the alarm running?
+     * @param appWidgetId For the given widget id
+     */
+    static void setAlarmRunning(Context context, boolean isRunning, int appWidgetId) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
+        prefs.putBoolean(PREF_IS_RUNNING_PREFIX + appWidgetId, isRunning);
+        prefs.commit();
+    }
+
+    static boolean isAlarmRunning(Context context, int appWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        boolean isRunning = prefs.getBoolean(PREF_IS_RUNNING_PREFIX + appWidgetId, false);
+
+        return isRunning;
+    }
+
+    /**
      * Update the widget
      * @param context
      * @param appWidgetManager
@@ -150,14 +210,24 @@ public class NapplyWidget extends AppWidgetProvider {
      */
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, String napLabel) {
 
+        // Prepare widget views
         int napDuration = getNapDuration(context, appWidgetId);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.napply_widget_layout);
         views.setTextViewText(R.id.nap_time, "" + napDuration);
         views.setTextViewText(R.id.nap_end, napLabel);
 
+        // Prepare intent to launch alarm on widget click
         Intent intent = new Intent(context, NapplyWidget.class);
-        intent.setAction(Napply.ACTION_START_ALARM);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+
+        // The action on the widget click changes if an alarm is running
+        if (isAlarmRunning(context, appWidgetId)) {
+            intent.setAction(Napply.ACTION_CANCEL_ALARM);
+        }
+        else {
+            intent.setAction(Napply.ACTION_START_ALARM);
+        }
+
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.napply_widget, pendingIntent);
 

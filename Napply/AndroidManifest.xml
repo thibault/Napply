@@ -34,6 +34,7 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 				<action android:name="fr.miximum.napply.START_ALARM" />
 				<action android:name="fr.miximum.napply.CANCEL_ALARM" />
+				<action android:name="fr.miximum.napply.ALARM_TERMINATED" />
 			</intent-filter>
 			<meta-data android:name="android.appwidget.provider"
 				android:resource="@xml/napply_widget_meta" />
@@ -63,7 +64,6 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
 		<activity android:name="AlarmCancelDialog">
 		     <intent-filter>
 	             <action android:name="fr.miximum.napply.RING_ALARM" />
-	             <action android:name="fr.miximum.napply.CANCEL_ALARM" />
 	         </intent-filter>
 		</activity>
     </application>

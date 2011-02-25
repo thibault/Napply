@@ -3,6 +3,7 @@ package fr.miximum.napply;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -41,42 +42,46 @@ public class AlarmService extends Service {
 
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        if (Napply.ACTION_RING_ALARM.equals(intent.getAction())) {
-            setupAutokillAlarm();
-            ring();
+        // get appWidget id
+        int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
         }
-        else if (Napply.ACTION_CANCEL_ALARM.equals(intent.getAction()) && isAlarmRunning)
-        {
-            stop();
 
-            // Was the alarm terminated by the autokill feature?
-            Bundle extras = intent.getExtras();
-            boolean isAutokill = extras != null && extras.getBoolean(AUTOKILL_EXTRA, false);
-            if (isAutokill) {
-                // If autokill, we need to destroy the dialog alert
-                destroyDialog();
+        if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+
+            if (Napply.ACTION_RING_ALARM.equals(intent.getAction())) {
+                setupAutokillAlarm(appWidgetId);
+                ring();
             }
-            else {
-                // Else, cancel the alarm
-                cancelAutokillAlarm();
+            else if (Napply.ACTION_CANCEL_ALARM.equals(intent.getAction()) && isAlarmRunning)
+            {
+                stop();
+                sendAlarmTerminatedIntent(appWidgetId);
+                cancelAutokillAlarm(appWidgetId);
+                stopSelf();
             }
-            stopSelf();
-        }
-        else if (Napply.ACTION_SNOOZE_ALARM.equals(intent.getAction()) && isAlarmRunning)
-        {
-            stop();
-            cancelAutokillAlarm();
-            scheduleSnooze();
+            else if (Napply.ACTION_SNOOZE_ALARM.equals(intent.getAction()) && isAlarmRunning)
+            {
+                stop();
+                cancelAutokillAlarm(appWidgetId);
+                scheduleSnooze(appWidgetId);
+            }
         }
 
         return START_STICKY;
     }
 
     /**
-     * Terminate the dialog activity
+     * Send broadcast intent to indicate that alarm is terminated
+     * @param appWidgetId The id of the appWidget that initiated
      */
-    private void destroyDialog() {
-        Intent intent = new Intent(Napply.ACTION_DESTROY_DIALOG);
+    private void sendAlarmTerminatedIntent(int appWidgetId) {
+        Intent intent = new Intent(Napply.ALARM_TERMINATED);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        Log.e(Napply.TAG, "Send broadcast terminated intent");
         sendBroadcast(intent);
     }
 
@@ -112,12 +117,15 @@ public class AlarmService extends Service {
 
     /**
      * Schedule to relaunch alarm in a few minutes
+     * @param appWidgetId The id of the appWidget that initiated the alarm
      */
-    private void scheduleSnooze() {
+    private void scheduleSnooze(int appWidgetId) {
 
         Intent intent = new Intent(this, AlarmCancelDialog.class);
         intent.setAction(Napply.ACTION_RING_ALARM);
-        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        PendingIntent pi = PendingIntent.getActivity(this, appWidgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + SNOOZE_DELAY, pi);
@@ -125,13 +133,15 @@ public class AlarmService extends Service {
 
     /**
      * We setup a timer to prevent the alarm to run for hours
+     * @param appWidgetId The id of the appWidget that initiated the alarm
      */
-    private void setupAutokillAlarm() {
+    private void setupAutokillAlarm(int appWidgetId) {
 
         Intent intent = new Intent(this, AlarmService.class);
         intent.setAction(Napply.ACTION_CANCEL_ALARM);
         intent.putExtra(AUTOKILL_EXTRA, true);
-        PendingIntent pi = PendingIntent.getService(this, 0, intent, 0);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        PendingIntent pi = PendingIntent.getService(this, appWidgetId, intent, 0);
 
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + AUTO_KILL_TIMEOUT, pi);
@@ -139,12 +149,14 @@ public class AlarmService extends Service {
 
     /**
      * Cancel the upcoming autokill alarm
+     * @param appWidgetId The id of the appWidget that initiated the alarm
      */
-    private void cancelAutokillAlarm() {
+    private void cancelAutokillAlarm(int appWidgetId) {
         Intent intent = new Intent(this, AlarmService.class);
         intent.setAction(Napply.ACTION_CANCEL_ALARM);
         intent.putExtra(AUTOKILL_EXTRA, true);
-        PendingIntent pi = PendingIntent.getService(this, 0, intent, 0);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        PendingIntent pi = PendingIntent.getService(this, appWidgetId, intent, 0);
 
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         am.cancel(pi);

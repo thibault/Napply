@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,13 +30,26 @@ public class AlarmCancelDialog extends Activity {
     /** Handler to turn the screen on and bright */
     private PowerManager.WakeLock mWakeLock = null;
 
+    /** The id of the AppWidget which called us */
+    private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+
     /**
      * If the alarm stops itself, it should be able to tell us to finish
      */
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (Napply.ACTION_DESTROY_DIALOG.equals(intent.getAction())) {
+
+            // Get the appWidget id
+            int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                        AppWidgetManager.INVALID_APPWIDGET_ID);
+            }
+
+            // We only terminate if we are the dialog associated with the current alarm
+            if (Napply.ALARM_TERMINATED.equals(intent.getAction()) && mAppWidgetId == appWidgetId) {
                 finish();
             }
         }
@@ -45,8 +59,22 @@ public class AlarmCancelDialog extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // get appWidget id
+        Intent intent = getIntent();
+        mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            mAppWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+        }
+
+        // We cannot continue without a valid app widget id
+        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            finish();
+        }
+
         // Register terminate message receiver
-        IntentFilter filter = new IntentFilter(Napply.ACTION_DESTROY_DIALOG);
+        IntentFilter filter = new IntentFilter(Napply.ALARM_TERMINATED);
         registerReceiver(mReceiver, filter);
 
         // Handler to the lock object
@@ -124,6 +152,7 @@ public class AlarmCancelDialog extends Activity {
     private void ringAlarm(Context context) {
         Intent ring = new Intent(context, AlarmService.class);
         ring.setAction(Napply.ACTION_RING_ALARM);
+        ring.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
         startService(ring);
     }
 
@@ -133,6 +162,7 @@ public class AlarmCancelDialog extends Activity {
     private void snoozeAlarm(Context context) {
         Intent snooze = new Intent(context, AlarmService.class);
         snooze.setAction(Napply.ACTION_SNOOZE_ALARM);
+        snooze.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
         startService(snooze);
     }
 
@@ -142,6 +172,7 @@ public class AlarmCancelDialog extends Activity {
     private void dismissAlarm(Context context) {
         Intent dismiss = new Intent(context, AlarmService.class);
         dismiss.setAction(Napply.ACTION_CANCEL_ALARM);
+        dismiss.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
         startService(dismiss);
     }
 }

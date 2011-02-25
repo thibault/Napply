@@ -82,6 +82,10 @@ public class NapplyWidget extends AppWidgetProvider {
 
                 updateAppWidget(context, AppWidgetManager.getInstance(context), widgetId);
             }
+            else if (Napply.ALARM_TERMINATED.equals(intent.getAction())) {
+                setAlarmRunning(context, false, widgetId);
+                updateAppWidget(context, AppWidgetManager.getInstance(context), widgetId);
+            }
         }
     }
 
@@ -97,6 +101,7 @@ public class NapplyWidget extends AppWidgetProvider {
         Intent intent = new Intent(context, AlarmCancelDialog.class);
         intent.setAction(Napply.ACTION_RING_ALARM);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pi = PendingIntent.getActivity(context, appWidgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

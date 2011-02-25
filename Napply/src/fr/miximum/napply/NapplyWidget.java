@@ -195,6 +195,12 @@ public class NapplyWidget extends AppWidgetProvider {
         prefs.commit();
     }
 
+    /**
+     * Tells if the alarm for given widget is currently pending
+     * @param context
+     * @param appWidgetId
+     * @return A boolean, is an alarm is pending?
+     */
     static boolean isAlarmRunning(Context context, int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
         boolean isRunning = prefs.getBoolean(PREF_IS_RUNNING_PREFIX + appWidgetId, false);

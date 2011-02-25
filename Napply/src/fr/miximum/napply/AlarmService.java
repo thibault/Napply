@@ -64,7 +64,7 @@ public class AlarmService extends Service {
             }
         }
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     /**

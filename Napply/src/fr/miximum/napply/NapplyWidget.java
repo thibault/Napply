@@ -26,6 +26,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -36,6 +37,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
 public class NapplyWidget extends AppWidgetProvider {
 
@@ -44,6 +46,8 @@ public class NapplyWidget extends AppWidgetProvider {
     private static final String PREF_DURATION_PREFIX = "nap_duration_";
 
     private static final String PREF_IS_RUNNING_PREFIX = "is_nap_running_";
+
+    private static final String PREF_RINGER_MODE = "ringer_mode";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -67,6 +71,7 @@ public class NapplyWidget extends AppWidgetProvider {
                 int duration = startAlarm(context, appWidgetId);
                 showNewNapToast(context, duration);
                 setAlarmRunning(context, true, appWidgetId);
+                startSilentMode(context);
 
                 updateAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId, formatAlarmTime(duration));
             }
@@ -74,16 +79,87 @@ public class NapplyWidget extends AppWidgetProvider {
                 stopAlarm(context, appWidgetId);
                 showCanceledToast(context);
                 setAlarmRunning(context, false, appWidgetId);
+                stopSilentMode(context);
 
                 updateAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);
             }
             else if (Napply.ALARM_TERMINATED.equals(intent.getAction())) {
                 setAlarmRunning(context, false, appWidgetId);
+                stopSilentMode(context);
                 updateAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);
             }
         }
 
         super.onReceive(context, intent);
+    }
+
+    /**
+     * Set the handset to silent mode
+     * @param context
+     */
+    private void startSilentMode(Context context) {
+        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+
+        // We save the ringer mode only if no other widget did it before
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        if (!prefs.contains(PREF_RINGER_MODE)) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt(PREF_RINGER_MODE, am.getRingerMode());
+            editor.commit();
+        }
+
+        am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+    }
+
+    /**
+     * Reset the silent mode to it's original state
+     * @param context
+     */
+    private void stopSilentMode(Context context) {
+
+        // We only reset the silent mode if no other alarm is pending
+        if (!someAlarmPending(context)) {
+            SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+            if (prefs.contains(PREF_RINGER_MODE)) {
+                // Reset ring mode to its initial value
+                int ringerMode = prefs.getInt(PREF_RINGER_MODE, AudioManager.RINGER_MODE_NORMAL);
+                AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                am.setRingerMode(ringerMode);
+
+                // Delete the preference
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.remove(PREF_RINGER_MODE);
+                editor.commit();
+            }
+            else {
+                Log.e(Napply.TAG, "No reference to initial ringer mode");
+            }
+        }
+    }
+
+    /**
+     * Tells if is there at least one more alarm pending
+     * We will iterate over all the "is_nap_running_*" preferences
+     * @param context
+     * @return true if an alarm is pending
+     */
+    private boolean someAlarmPending(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        Map<String,?> allPreferences = prefs.getAll();
+
+        boolean pending = false;
+        for(Map.Entry<String, ?> e : allPreferences.entrySet()) {
+            if (e.getKey().startsWith(PREF_IS_RUNNING_PREFIX)) {
+                boolean value = e.getValue().equals(new Boolean(true));
+
+                if (value) {
+                    pending = true;
+                    break;
+                }
+            }
+        }
+
+        return pending;
     }
 
     /**
@@ -162,7 +238,7 @@ public class NapplyWidget extends AppWidgetProvider {
      */
     private void stopAlarm(Context context, int appWidgetId) {
 
-        // Prepare the same intant as for launching alarm
+        // Prepare the same intent as for launching alarm
         Intent intent = new Intent(context, AlarmCancelDialog.class);
         intent.setAction(Napply.ACTION_RING_ALARM);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
@@ -179,7 +255,6 @@ public class NapplyWidget extends AppWidgetProvider {
      * @param napDuration duration in milliseconds
      */
     private void showNewNapToast(Context context, int napDuration) {
-
         CharSequence message = context.getString(R.string.toast_alarm_started, formatAlarmTime(napDuration));
         int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, message, duration);

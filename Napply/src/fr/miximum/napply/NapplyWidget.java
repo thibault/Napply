@@ -28,6 +28,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -51,7 +52,7 @@ public class NapplyWidget extends AppWidgetProvider {
         // Perform this loop procedure for each App Widget that belongs to this provider
         for (int i=0; i<N; i++) {
             int appWidgetId = appWidgetIds[i];
-            updateAppWidget(context, appWidgetManager, appWidgetId, Napply.ACTION_START_ALARM);
+            updateAppWidget(context, appWidgetManager, appWidgetId);
         }
     }
 
@@ -81,6 +82,26 @@ public class NapplyWidget extends AppWidgetProvider {
                 updateAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);
             }
         }
+
+        super.onReceive(context, intent);
+    }
+
+    /**
+     * When a widget is destroyed, we need to delete associated alarms
+     */
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        Log.d(Napply.TAG, "Widget deleted");
+
+        final int N = appWidgetIds.length;
+
+        for (int i = 0 ; i < N ; i++) {
+            int appWidgetId = appWidgetIds[i];
+            setAlarmRunning(context, false, appWidgetId);
+            stopAlarm(context, appWidgetId);
+        }
+
+        super.onDeleted(context, appWidgetIds);
     }
 
     /**

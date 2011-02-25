@@ -58,33 +58,33 @@ public class NapplyWidget extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         // Get appWidget id
-        int widgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+        int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            widgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
+            appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
                     AppWidgetManager.INVALID_APPWIDGET_ID);
         }
 
         // Only if we have a valid appWidgetId
-        if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+        if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
 
             if (Napply.ACTION_START_ALARM.equals(intent.getAction())) {
-                int duration = startAlarm(context, widgetId);
+                int duration = startAlarm(context, appWidgetId);
                 showNewNapToast(context, duration);
-                setAlarmRunning(context, true, widgetId);
+                setAlarmRunning(context, true, appWidgetId);
 
-                updateAppWidget(context, AppWidgetManager.getInstance(context), widgetId, formatAlarmTime(duration));
+                updateAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId, formatAlarmTime(duration));
             }
             else if (Napply.ACTION_CANCEL_ALARM.equals(intent.getAction())) {
-                stopAlarm(context, widgetId);
+                stopAlarm(context, appWidgetId);
                 showCanceledToast(context);
-                setAlarmRunning(context, false, widgetId);
+                setAlarmRunning(context, false, appWidgetId);
 
-                updateAppWidget(context, AppWidgetManager.getInstance(context), widgetId);
+                updateAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);
             }
             else if (Napply.ALARM_TERMINATED.equals(intent.getAction())) {
-                setAlarmRunning(context, false, widgetId);
-                updateAppWidget(context, AppWidgetManager.getInstance(context), widgetId);
+                setAlarmRunning(context, false, appWidgetId);
+                updateAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);
             }
         }
     }

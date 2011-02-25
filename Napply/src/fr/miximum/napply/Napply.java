@@ -15,7 +15,7 @@ public class Napply extends Activity
 
     public static final String ACTION_SNOOZE_ALARM = "fr.miximum.napply.SNOOZE_ALARM";
 
-    public static final String ACTION_DESTROY_DIALOG = "fr.miximum.napply.DESTROY_DIALOG";
+    public static final String ALARM_TERMINATED = "fr.miximum.napply.ALARM_TERMINATED";
 
     /** Called when the activity is first created. */
     @Override

@@ -47,13 +47,7 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
 			</intent-filter>
 		</activity>
 
-		<activity android:name="Napply" android:label="@string/app_name">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.DEFAULT" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-		</activity>
+        <!-- Ring alarm service -->
 		<service android:name="AlarmService">
 		    <intent-filter>
 			    <action android:name="fr.miximum.napply.RING_ALARM" />
@@ -61,6 +55,8 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
 			    <action android:name="fr.miximum.napply.SNOOZE_ALARM" />
 			</intent-filter>
 		</service>
+
+        <!-- Dialog to show cancel/snooze dialog -->
 		<activity android:name="AlarmCancelDialog">
 		     <intent-filter>
 	             <action android:name="fr.miximum.napply.RING_ALARM" />

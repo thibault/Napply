@@ -62,6 +62,12 @@ public class AlarmCancelDialog extends Activity {
     }
 
     @Override
+    public void onDestroy() {
+        unregisterReceiver(mReceiver);
+        super.onDestroy();
+    }
+
+    @Override
     public void onResume() {
         // Disable the lock and turn the screen on
         mWakeLock.acquire();

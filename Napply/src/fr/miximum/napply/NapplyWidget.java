@@ -99,9 +99,22 @@ public class NapplyWidget extends AppWidgetProvider {
             int appWidgetId = appWidgetIds[i];
             setAlarmRunning(context, false, appWidgetId);
             stopAlarm(context, appWidgetId);
+            deletePreferences(context, appWidgetId);
         }
 
         super.onDeleted(context, appWidgetIds);
+    }
+
+    /**
+     * Delete a widget shared preferences
+     * @param context
+     * @param appWidgetId
+     */
+    private void deletePreferences(Context context, int appWidgetId) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
+        prefs.remove(PREF_DURATION_PREFIX + appWidgetId);
+        prefs.remove(PREF_IS_RUNNING_PREFIX + appWidgetId);
+        prefs.commit();
     }
 
     /**

@@ -10,7 +10,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.os.Vibrator;
@@ -42,13 +41,7 @@ public class AlarmService extends Service {
 
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        // get appWidget id
-        int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    AppWidgetManager.INVALID_APPWIDGET_ID);
-        }
+        int appWidgetId = NapplyWidget.getAppWidgetId(intent);
 
         if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
 

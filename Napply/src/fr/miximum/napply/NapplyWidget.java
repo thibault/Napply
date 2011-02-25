@@ -57,13 +57,7 @@ public class NapplyWidget extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // Get appWidget id
-        int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    AppWidgetManager.INVALID_APPWIDGET_ID);
-        }
+        int appWidgetId = getAppWidgetId(intent);
 
         // Only if we have a valid appWidgetId
         if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
@@ -87,6 +81,22 @@ public class NapplyWidget extends AppWidgetProvider {
                 updateAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);
             }
         }
+    }
+
+    /**
+     * Get AppWidget id from the intent extras
+     * @param intent
+     * @return The appWidgetId, or link AppWidgetManager.IINVALID_APPWIDGET_ID if none is provided
+     */
+    public static int getAppWidgetId(Intent intent) {
+        // Get appWidget id
+        int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+        }
+        return appWidgetId;
     }
 
     /**

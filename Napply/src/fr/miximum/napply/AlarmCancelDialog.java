@@ -40,13 +40,7 @@ public class AlarmCancelDialog extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            // Get the appWidget id
-            int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-            Bundle extras = intent.getExtras();
-            if (extras != null) {
-                appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                        AppWidgetManager.INVALID_APPWIDGET_ID);
-            }
+            int appWidgetId = NapplyWidget.getAppWidgetId(intent);
 
             // We only terminate if we are the dialog associated with the current alarm
             if (Napply.ALARM_TERMINATED.equals(intent.getAction()) && mAppWidgetId == appWidgetId) {
@@ -59,14 +53,7 @@ public class AlarmCancelDialog extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // get appWidget id
-        Intent intent = getIntent();
-        mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            mAppWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    AppWidgetManager.INVALID_APPWIDGET_ID);
-        }
+        mAppWidgetId = NapplyWidget.getAppWidgetId(getIntent());
 
         // We cannot continue without a valid app widget id
         if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {

@@ -12,6 +12,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 
@@ -24,6 +28,9 @@ public class AlarmCancelDialog extends Activity {
     /** Dismiss or snooze dialog id */
     private static final int DIALOG_ID = 1;
 
+    /** If we roll the handset past this angle, we consider it a snooze action */
+    private static final int ROLL_ANGLE_BEFORE_SNOOZE = 170;
+
     /** Handler to unlock the screen */
     private KeyguardLock mKeyguardLock = null;
 
@@ -32,6 +39,9 @@ public class AlarmCancelDialog extends Activity {
 
     /** The id of the AppWidget which called us */
     private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+
+    /** Handler to the sensor system service */
+    private SensorManager mSensorManager;
 
     /**
      * If the alarm stops itself, it should be able to tell us to finish
@@ -49,11 +59,58 @@ public class AlarmCancelDialog extends Activity {
         }
     };
 
+    /** Sensor listener, to detect handset rolling */
+    private SensorEventListener mSensorListener = new SensorEventListener() {
+
+        private float[] mGravity = null;
+        private float[] mGeomagnetic = null;
+        private double mPreviousRoll = ROLL_ANGLE_BEFORE_SNOOZE;
+
+        /** If the handset faces toward the floor, snooze the alarm */
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                mGravity = event.values.clone();
+            }
+            if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+                mGeomagnetic = event.values.clone();
+            }
+
+            if (mGravity != null && mGeomagnetic != null) {
+                float R[] = new float[9];
+                float I[] = new float[9];
+                if (SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic)) {
+                    float orientation[] = new float[3];
+
+                    SensorManager.getOrientation(R, orientation);
+                    double roll = Math.abs(Math.toDegrees(orientation[2]));
+
+                    // Don't snooze if the handset is already upside down
+                    if (mPreviousRoll < ROLL_ANGLE_BEFORE_SNOOZE &&
+                            roll > ROLL_ANGLE_BEFORE_SNOOZE) {
+                        snoozeAlarm(getApplicationContext());
+                        finish();
+                    }
+                    mPreviousRoll = roll;
+                }
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Get AppWidget id from launching intent
         mAppWidgetId = NapplyWidget.getAppWidgetId(getIntent());
+
+        // Register orientation sensor
+        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
 
         // We cannot continue without a valid app widget id
         if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
@@ -88,6 +145,13 @@ public class AlarmCancelDialog extends Activity {
         mWakeLock.acquire();
         mKeyguardLock.disableKeyguard();
 
+        mSensorManager.registerListener(mSensorListener,
+                mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(mSensorListener,
+                mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+                SensorManager.SENSOR_DELAY_NORMAL);
+
         super.onResume();
     }
 
@@ -96,6 +160,8 @@ public class AlarmCancelDialog extends Activity {
         // Reenable screen lock, and release the power lock
         mKeyguardLock.reenableKeyguard();
         mWakeLock.release();
+
+        mSensorManager.unregisterListener(mSensorListener);
 
         super.onPause();
     }

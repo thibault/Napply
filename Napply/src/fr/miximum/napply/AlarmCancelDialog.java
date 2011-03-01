@@ -109,13 +109,13 @@ public class AlarmCancelDialog extends Activity {
         // Get AppWidget id from launching intent
         mAppWidgetId = NapplyWidget.getAppWidgetId(getIntent());
 
-        // Register orientation sensor
-        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-
         // We cannot continue without a valid app widget id
         if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             finish();
         }
+
+        // Register orientation sensor
+        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
 
         // Register terminate message receiver
         IntentFilter filter = new IntentFilter(Napply.ALARM_TERMINATED);

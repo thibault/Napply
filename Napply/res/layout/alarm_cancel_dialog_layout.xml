@@ -17,20 +17,25 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Napply. If not, see <http://www.gnu.org/licenses/>.
 -->
-<resources>
-    <style name="Widget">
-        <item name="android:textColor">#fff</item>
-        <item name="android:padding">0dp</item>
-        <item name="android:lineSpacingExtra">0dp</item>
-    </style>
-    <style name="Widget.NapTime">
-        <item name="android:textSize">40dp</item>
-    </style>
-    <style name="Widget.EndTime">
-        <item name="android:textSize">15dp</item>
-    </style>
 
-    <style name="Button">
-        <item name="android:textSize">30sp</item>
-    </style>
-</resources>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dip"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/snooze_alarm"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:text="@string/snooze"
+        android:layout_marginBottom="10dp"
+        style="@style/Button"/>
+
+    <Button
+        android:id="@+id/dismiss_alarm"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:text="@string/dismiss"
+        style="@style/Button" />
+</LinearLayout>

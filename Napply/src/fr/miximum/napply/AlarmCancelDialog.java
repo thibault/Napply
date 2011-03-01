@@ -18,6 +18,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 /**
  * This class has a simple purpose: displaying a dialog to dismiss or snooze the alarm
@@ -106,6 +109,9 @@ public class AlarmCancelDialog extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Set activity layout
+        setContentView(R.layout.alarm_cancel_dialog_layout);
+
         // Get AppWidget id from launching intent
         mAppWidgetId = NapplyWidget.getAppWidgetId(getIntent());
 
@@ -129,8 +135,9 @@ public class AlarmCancelDialog extends Activity {
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, Napply.TAG);
 
+        setClickHandlers();
+
         ringAlarm(getApplicationContext());
-        showDialog(DIALOG_ID);
     }
 
     @Override
@@ -139,6 +146,7 @@ public class AlarmCancelDialog extends Activity {
         super.onDestroy();
     }
 
+    /** Acquire needed resources (keyguard, wakelock, sensors) */
     @Override
     public void onResume() {
         // Disable the lock and turn the screen on
@@ -155,6 +163,7 @@ public class AlarmCancelDialog extends Activity {
         super.onResume();
     }
 
+    /** Release resources */
     @Override
     public void onPause() {
         // Reenable screen lock, and release the power lock
@@ -167,36 +176,28 @@ public class AlarmCancelDialog extends Activity {
     }
 
     /**
-     * Create the dialog
+     * Configure button event handlers
      */
-    protected Dialog onCreateDialog(int id) {
-        Dialog dialog;
-        Context context = getApplicationContext();
-        switch (id) {
-            case DIALOG_ID:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(context.getString(R.string.wake_up))
-                        .setCancelable(false)
-                        .setPositiveButton(context.getString(R.string.snooze), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                snoozeAlarm(getApplicationContext());
-                                finish();
-                            }
-                        })
-                        .setNegativeButton(context.getString(R.string.dismiss), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dismissAlarm(getApplicationContext());
-                                finish();
-                            }
-                        });
-                AlertDialog alert = builder.create();
-                dialog = alert;
-                break;
+    protected void setClickHandlers() {
+        // Set snooze click handler
+        Button snooze = (Button) findViewById(R.id.snooze_alarm);
+        snooze.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snoozeAlarm(getApplicationContext());
+                finish();
+            }
+        });
 
-            default:
-                dialog = null;
-        }
-        return dialog;
+        // Set dismiss click handler
+        Button dismiss = (Button) findViewById(R.id.dismiss_alarm);
+        dismiss.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismissAlarm(getApplicationContext());
+                finish();
+            }
+        });
     }
 
     /**

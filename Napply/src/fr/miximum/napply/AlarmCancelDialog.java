@@ -2,14 +2,11 @@
 package fr.miximum.napply;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
 import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Sensor;
@@ -27,9 +24,6 @@ import android.widget.Button;
  * The dialog result is sent back to the alarm manager via an intent
  */
 public class AlarmCancelDialog extends Activity {
-
-    /** Dismiss or snooze dialog id */
-    private static final int DIALOG_ID = 1;
 
     /** If we roll the handset past this angle, we consider it a snooze action */
     private static final int ROLL_ANGLE_BEFORE_SNOOZE = 170;

@@ -18,6 +18,7 @@ import android.os.PowerManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 /**
  * This class has a simple purpose: displaying a dialog to dismiss or snooze the alarm
@@ -206,6 +207,7 @@ public class AlarmCancelDialog extends Activity {
         snooze.setAction(Napply.ACTION_SNOOZE_ALARM);
         snooze.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
         startService(snooze);
+        showSnoozeToast();
     }
 
     /**
@@ -216,5 +218,16 @@ public class AlarmCancelDialog extends Activity {
         dismiss.setAction(Napply.ACTION_CANCEL_ALARM);
         dismiss.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
         startService(dismiss);
+    }
+
+    /**
+     * Display notification message when alarm snoozed
+     */
+    private void showSnoozeToast() {
+        Context context = getApplicationContext();
+        CharSequence message = context.getString(R.string.alarm_snoozed);
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, message, duration);
+        toast.show();
     }
 }

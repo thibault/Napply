@@ -163,7 +163,7 @@ public class AlarmService extends Service {
     private void showCancelDialog(int appWidgetId) {
         Intent intent = new Intent(this, AlarmCancelDialog.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
 

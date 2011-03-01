@@ -133,6 +133,12 @@ public class AlarmCancelDialog extends Activity {
     }
 
     @Override
+    public void onStop() {
+        snoozeAlarm(getApplicationContext());
+        super.onStop();
+    }
+
+    @Override
     public void onDestroy() {
         unregisterReceiver(mReceiver);
         super.onDestroy();

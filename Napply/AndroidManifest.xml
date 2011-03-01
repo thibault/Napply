@@ -60,5 +60,12 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
 		<activity android:name="AlarmCancelDialog" android:label="@string/wake_up"
 		      android:theme="@android:style/Theme.Dialog" >
 		</activity>
+
+		<activity android:name="About" android:label="@string/app_name">
+			<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+        </activity>
     </application>
 </manifest>

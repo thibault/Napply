@@ -11,4 +11,22 @@
     <string name="snooze">Just a few more minutes</string>
     <string name="dismiss">Ok, I\'ll wake up. I need some coffee</string>
     <string name="alarm_snoozed">Alarm will ring again in 7 minutes.</string>
+    <string name="app_description"><b>Take a quick nap with the Napply widget.</b>\n\n
+<li>Long click on home screen</li>\n
+<li>Choose Widget > Napply</li>\n
+<li>Configure nap time</li>\n
+<li>Just tap on the widget: alarm is setup, and silent mode is on</li>\n\n
+
+<b>You just need to know this:</b>\n\n
+<li>We use the default system alarm volume and ringtone</li>\n
+<li>When the alarm rings, you can face the handset toward the floor to snooze it</li>
+    </string>
+    <string name="app_credits"><b>Credits</b>\n\n
+I\'m Thibault Jouannic, freelance web and android developer. Want an app? Give me a call.\n\n
+http://thibault.jouannic.fr\n\n
+http://miximum.fr\n\n
+
+This app is released under the GPLv3. Source available on github\n\n
+https://github.com/thibault/napply
+    </string>
 </resources>

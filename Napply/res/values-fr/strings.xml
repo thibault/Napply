@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Napply</string>
+    <string name="create_widget">C\'est bon !</string>
+    <string name="cancel">Annule tout !</string>
+    <string name="configure_intro">Sélectionnez la durée de votre sieste :</string>
+    <string name="default_widget_label">zZz</string>
+    <string name="toast_alarm_started">Le réveil sonnera à <xliff:g id="duration">%1$s</xliff:g>. Bonne sieste.</string>
+    <string name="toast_alarm_canceled">L\'alarme est annulée</string>
+    <string name="wake_up">Debout là dedans !</string>
+    <string name="snooze">Encore quelques minutes</string>
+    <string name="dismiss">Ok, je me lève. Où est le café ?</string>
+    <string name="alarm_snoozed">L\'alarme re-sonnera dans 7 minutes</string>
+    <string name="app_description"><b>Prenez une bonne sieste avec le widget Napply</b>\n\n
+<li>Cliquez sur l\'écran d\'accueil ;</li>\n
+<li>Choisissez Widget > Napply ;</li>\n
+<li>Configurez le temps de sieste ;</li>\n
+<li>Cliquez sur le widget : le réveil est programmé, et le téléphone en mode silencieux ;</li>\n\n
+
+<b>Vous devez juste savoir :</b>\n\n
+<li>Le widget utilise la sonnerie et le volume de l\'alarme par défaut</li>\n
+<li>Quand le réveil sonne, tournez votre téléphone écran vers le bas pour activer la fonction snooze</li>
+    </string>
+    <string name="app_credits"><b>Credits</b>\n\n
+Je suis Thibault Jouannic, développeur web et android freelance. Si vous voulez m\'embaucher, passez-moi un coup de fil.\n\n
+http://thibault.jouannic.fr\n\n
+http://miximum.fr\n\n
+
+Cette appli est mise à disposition sous licence GPLv3. Le source est sur Github.\n\n
+https://github.com/thibault/napply
+    </string>
+</resources>

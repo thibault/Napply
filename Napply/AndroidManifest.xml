@@ -58,10 +58,7 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
 
         <!-- Dialog to show cancel/snooze dialog -->
 		<activity android:name="AlarmCancelDialog" android:label="@string/wake_up"
-		      android:theme="@android:style/Theme.Dialog">
-		     <intent-filter>
-	             <action android:name="fr.miximum.napply.RING_ALARM" />
-	         </intent-filter>
+		      android:theme="@android:style/Theme.Dialog" >
 		</activity>
     </application>
 </manifest>

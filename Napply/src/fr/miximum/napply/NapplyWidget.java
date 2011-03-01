@@ -175,6 +175,7 @@ public class NapplyWidget extends AppWidgetProvider {
             int appWidgetId = appWidgetIds[i];
             setAlarmRunning(context, false, appWidgetId);
             stopAlarm(context, appWidgetId);
+            stopSilentMode(context);
             deletePreferences(context, appWidgetId);
         }
 
@@ -218,11 +219,11 @@ public class NapplyWidget extends AppWidgetProvider {
     private int startAlarm(Context context, int appWidgetId) {
         int napDuration = 60 * 1000 * getNapDuration(context, appWidgetId);
 
-        Intent intent = new Intent(context, AlarmCancelDialog.class);
+        Intent intent = new Intent(context, AlarmService.class);
         intent.setAction(Napply.ACTION_RING_ALARM);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pi = PendingIntent.getActivity(context, appWidgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pi = PendingIntent.getService(context, appWidgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         am.cancel(pi);
@@ -239,10 +240,10 @@ public class NapplyWidget extends AppWidgetProvider {
     private void stopAlarm(Context context, int appWidgetId) {
 
         // Prepare the same intent as for launching alarm
-        Intent intent = new Intent(context, AlarmCancelDialog.class);
+        Intent intent = new Intent(context, AlarmService.class);
         intent.setAction(Napply.ACTION_RING_ALARM);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        PendingIntent pi = PendingIntent.getActivity(context, appWidgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pi = PendingIntent.getService(context, appWidgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         // Cancel the alarm
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

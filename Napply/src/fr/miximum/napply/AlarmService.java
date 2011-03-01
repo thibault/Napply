@@ -48,6 +48,7 @@ public class AlarmService extends Service {
             if (Napply.ACTION_RING_ALARM.equals(intent.getAction())) {
                 setupAutokillAlarm(appWidgetId);
                 ring();
+                showCancelDialog(appWidgetId);
             }
             else if (Napply.ACTION_CANCEL_ALARM.equals(intent.getAction()) && isAlarmRunning)
             {
@@ -114,11 +115,11 @@ public class AlarmService extends Service {
      */
     private void scheduleSnooze(int appWidgetId) {
 
-        Intent intent = new Intent(this, AlarmCancelDialog.class);
+        Intent intent = new Intent(this, AlarmService.class);
         intent.setAction(Napply.ACTION_RING_ALARM);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        PendingIntent pi = PendingIntent.getActivity(this, appWidgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pi = PendingIntent.getService(this, appWidgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + SNOOZE_DELAY, pi);
@@ -153,6 +154,17 @@ public class AlarmService extends Service {
 
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         am.cancel(pi);
+    }
+
+    /**
+     * Display the alarm dismiss / snooze dialog
+     * @param appWidgetId
+     */
+    private void showCancelDialog(int appWidgetId) {
+        Intent intent = new Intent(this, AlarmCancelDialog.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @Override

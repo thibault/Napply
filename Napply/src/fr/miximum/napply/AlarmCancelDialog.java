@@ -130,8 +130,6 @@ public class AlarmCancelDialog extends Activity {
         mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, Napply.TAG);
 
         setClickHandlers();
-
-        ringAlarm(getApplicationContext());
     }
 
     @Override
@@ -192,16 +190,6 @@ public class AlarmCancelDialog extends Activity {
                 finish();
             }
         });
-    }
-
-    /**
-     * Ask the service to ring the alarm
-     */
-    private void ringAlarm(Context context) {
-        Intent ring = new Intent(context, AlarmService.class);
-        ring.setAction(Napply.ACTION_RING_ALARM);
-        ring.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
-        startService(ring);
     }
 
     /**

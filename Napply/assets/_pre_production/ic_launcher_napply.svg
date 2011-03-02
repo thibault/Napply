@@ -16,9 +16,9 @@
    version="1.1"
    inkscape:version="0.48.0 r9654"
    sodipodi:docname="ic_launcher_napply.svg"
-   inkscape:export-filename="/home/thibault/dev/android/projets/napply/Napply/res/drawable-hdpi/ic_launcher_napply.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
+   inkscape:export-filename="/home/thibault/dev/android/projets/napply/Napply/res/drawable-ldpi/ic_launcher_napply.png"
+   inkscape:export-xdpi="45"
+   inkscape:export-ydpi="45">
   <defs
      id="defs4">
     <linearGradient
@@ -179,11 +179,11 @@
     </filter>
     <filter
        inkscape:collect="always"
-       id="filter4269">
+       id="filter4293">
       <feGaussianBlur
          inkscape:collect="always"
          stdDeviation="0.71577684"
-         id="feGaussianBlur4271" />
+         id="feGaussianBlur4295" />
     </filter>
   </defs>
   <sodipodi:namedview
@@ -195,7 +195,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="11.313708"
      inkscape:cx="37.346154"
-     inkscape:cy="15.013607"
+     inkscape:cy="25.620209"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -269,7 +269,7 @@
     <g
        id="g4100-9"
        transform="matrix(0.99423114,0,0,1.0198315,0.26287472,-1002.1131)"
-       style="fill:#000000;fill-opacity:1;filter:url(#filter4269);opacity:0.75">
+       style="fill:#000000;fill-opacity:1;opacity:0.75000000000000000;filter:url(#filter4293)">
       <path
          sodipodi:nodetypes="ssccss"
          inkscape:connector-curvature="0"

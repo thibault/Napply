@@ -29,15 +29,12 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.format.Time;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Formatter;
-import java.util.GregorianCalendar;
 import java.util.Map;
 
 public class NapplyWidget extends AppWidgetProvider {
@@ -280,10 +277,10 @@ public class NapplyWidget extends AppWidgetProvider {
      * @return
      */
     private String formatAlarmTime(int napDuration) {
-        Calendar c = new GregorianCalendar();
-        c.setTime(new Date());
-        c.add(Calendar.MILLISECOND, napDuration);
-        return DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime());
+        Time t = new Time();
+        t.setToNow();
+        t.set(t.toMillis(false) +napDuration);
+        return t.format("%H:%M");
     }
 
     /**

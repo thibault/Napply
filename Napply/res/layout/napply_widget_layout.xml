@@ -29,7 +29,7 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
         android:id="@+id/nap_time"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="12dp"
         android:gravity="center_horizontal"
         style="@style/Widget.NapTime"/>
 

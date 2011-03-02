@@ -20,7 +20,7 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="fr.miximum.napply" android:versionCode="1"
-	android:versionName="1.0">
+	android:versionName="1.0.0">
 
 	<uses-permission android:name="android.permission.VIBRATE" />
 	<uses-permission android:name="android.permission.DISABLE_KEYGUARD" />

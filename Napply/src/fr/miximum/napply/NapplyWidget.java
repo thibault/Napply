@@ -36,6 +36,7 @@ import android.widget.Toast;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
@@ -344,7 +345,7 @@ public class NapplyWidget extends AppWidgetProvider {
         // Prepare widget views
         int napDuration = getNapDuration(context, appWidgetId);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.napply_widget_layout);
-        views.setTextViewText(R.id.nap_time, "" + napDuration);
+        views.setTextViewText(R.id.nap_time, formatNapDuration(napDuration));
         views.setTextViewText(R.id.nap_end, napLabel);
 
         // Prepare intent to launch alarm on widget click
@@ -374,5 +375,25 @@ public class NapplyWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         String napLabel = context.getString(R.string.default_widget_label);
         updateAppWidget(context, appWidgetManager, appWidgetId, napLabel);
+    }
+
+    /**
+     * Format the nap duration string
+     * @param napDuration The nap duration in minutes
+     * @return the formated duration «hour:minute»
+     */
+    public static String formatNapDuration(int napDuration) {
+        String formatted = "";
+        int hours = napDuration / 60;
+        int minutes = napDuration - (60 * hours);
+
+        Formatter f = new Formatter();
+        formatted = f.format("%02d", minutes).out().toString();
+
+        if (hours > 0) {
+            formatted = "" + hours + ":" + formatted;
+        }
+
+        return formatted;
     }
 }

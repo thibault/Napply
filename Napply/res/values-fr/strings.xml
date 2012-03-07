@@ -22,11 +22,10 @@
 <li>Quand le réveil sonne, tournez votre téléphone écran vers le bas pour activer la fonction snooze</li>
     </string>
     <string name="app_credits"><b>Credits</b>\n\n
-Je suis Thibault Jouannic, développeur web et android freelance. Si vous voulez m\'embaucher, passez-moi un coup de fil.\n\n
-http://thibault.jouannic.fr\n\n
-http://miximum.fr\n\n
+Vous aimez cette appli? Pourquoi ne pas tester mes autres applis ici :\n\n
+http://apps.miximum.fr/fr/\n\n
 
-Cette appli est mise à disposition sous licence GPLv3. Le source est sur Github.\n\n
-https://github.com/thibault/napply
+Si vous rencontrez un bug ou pour une demande de fonctionnalité, vous pouvez me contacter ici :\n\n
+https://github.com/thibault/Miximum-apps/issues
     </string>
 </resources>

@@ -19,14 +19,17 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="fr.miximum.napply" android:versionCode="1"
-	android:versionName="1.0.0">
+	package="fr.miximum.napply"
+	android:versionCode="2"
+	android:versionName="1.2">
 
 	<uses-permission android:name="android.permission.VIBRATE" />
 	<uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="8" />
+    <uses-sdk
+        android:minSdkVersion="7"
+        android:targetSdkVersion="14" />
 
 	<application android:label="@string/app_name" android:icon="@drawable/ic_launcher_napply">
 

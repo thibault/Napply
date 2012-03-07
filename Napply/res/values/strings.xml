@@ -22,11 +22,10 @@
 <li>When the alarm rings, you can face the handset toward the floor to snooze it</li>
     </string>
     <string name="app_credits"><b>Credits</b>\n\n
-I\'m Thibault Jouannic, freelance web and android developer. Want an app? Give me a call.\n\n
-http://thibault.jouannic.fr\n\n
-http://miximum.fr\n\n
+Do you like this app? Check my other apps there :\n\n
+http://apps.miximum.fr/en/\n\n
 
-This app is released under the GPLv3. Source available on github\n\n
-https://github.com/thibault/napply
+If you meet a bug or have a feature request, you can contact me here :\n\n
+https://github.com/thibault/Miximum-apps/issues
     </string>
 </resources>

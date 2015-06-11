@@ -20,6 +20,7 @@ along with Napply. If not, see <http://www.gnu.org/licenses/>.
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="fr.miximum.napply"
+	android:installLocation="auto"
 	android:versionCode="2"
 	android:versionName="1.2">
 
